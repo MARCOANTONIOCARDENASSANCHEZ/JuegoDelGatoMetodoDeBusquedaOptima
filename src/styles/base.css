@@ -1,0 +1,50 @@
+/*
+Sección: Base y accesibilidad.
+Qué hace: normaliza el documento, establece el fondo y asegura focos visibles.
+Dónde se usa: toda la aplicación.
+Fecha de modificación: 10/10/2026.
+Nombre: MCardenas.
+*/
+* {
+  box-sizing: border-box;
+}
+
+html {
+  min-width: 320px;
+  min-height: 100%;
+  background: var(--colorVoid);
+}
+
+body {
+  min-width: 320px;
+  min-height: 100vh;
+  margin: 0;
+  color: var(--colorParchment);
+  background:
+    radial-gradient(circle at 10% 20%, #fff 0 1px, transparent 2px),
+    radial-gradient(circle at 80% 35%, #2dff74 0 1px, transparent 2px),
+    radial-gradient(circle at 42% 72%, #3edbff 0 1px, transparent 2px),
+    radial-gradient(circle at 65% 12%, #fff 0 1px, transparent 2px),
+    #010503;
+  background-size: 93px 93px, 141px 141px, 177px 177px, 229px 229px;
+}
+
+button {
+  font: inherit;
+}
+
+button:focus-visible {
+  outline: 3px solid var(--colorFrost);
+  outline-offset: 3px;
+}
+
+button:disabled {
+  cursor: not-allowed;
+}
+
+fieldset {
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}

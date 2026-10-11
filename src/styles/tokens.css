@@ -1,0 +1,27 @@
+/*
+Sección: Tokens visuales.
+Qué hace: define colores, tipografía, sombras y medidas reutilizables.
+Dónde se usa: todos los archivos CSS de la interfaz.
+Fecha de modificación: 10/10/2026.
+Nombre: MCardenas.
+*/
+:root {
+  color-scheme: dark;
+  font-family: 'Arial Black', Impact, system-ui, sans-serif;
+  --colorVoid: #070b0d;
+  --colorStone: #18211d;
+  --colorStoneLight: #303b2d;
+  --colorIron: #6d765a;
+  --colorParchment: #fff0be;
+  --colorMuted: #c8c4a8;
+  --colorFire: #f04a24;
+  --colorEmber: #ffb11b;
+  --colorFrost: #36e1ed;
+  --colorFrostDeep: #087a9f;
+  --colorGold: #ffd24a;
+  --colorDanger: #c51f2f;
+  --shadowDeep: 0 24px 70px rgb(0 0 0 / 65%);
+  --borderCarved: 1px solid rgb(196 154 85 / 48%);
+  --radiusSmall: 4px;
+  --radiusMedium: 10px;
+}

@@ -1,0 +1,1106 @@
+/*
+Sección: Contenedor y encabezado.
+Qué hace: organiza el título, el estado y la cuadrícula principal sobre una escena gótica.
+Dónde se usa: estructura superior generada por renderGame.
+Fecha de modificación: 10/10/2026.
+Nombre: MCardenas.
+*/
+.gameShell {
+  position: relative;
+  isolation: isolate;
+  width: min(1380px, 100%);
+  min-height: 100vh;
+  margin: 0 auto;
+  padding: clamp(18px, 3vw, 44px);
+  overflow: hidden;
+}
+
+.gameShell::before,
+.gameShell::after {
+  position: fixed;
+  z-index: -1;
+  bottom: -90px;
+  width: 260px;
+  height: 260px;
+  border-radius: 50%;
+  filter: blur(50px);
+  content: '';
+  opacity: 0.2;
+}
+
+.gameShell::before {
+  left: -80px;
+  background: var(--colorFrost);
+}
+
+.gameShell::after {
+  right: -80px;
+  background: var(--colorEmber);
+}
+
+.gameHeader {
+  position: relative;
+  margin-bottom: 26px;
+  text-align: center;
+}
+
+.eyebrow {
+  margin: 0 0 4px;
+  color: var(--colorFrost);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+}
+
+.gameHeader h1 {
+  margin: 0;
+  color: #fff4bd;
+  font-size: clamp(2.15rem, 5vw, 4.8rem);
+  font-family: Impact, 'Arial Black', sans-serif;
+  font-weight: 900;
+  letter-spacing: 0.045em;
+  line-height: 1;
+  text-shadow: 4px 4px #b21b25, 7px 7px #091317, 0 0 24px rgb(255 177 27 / 35%);
+  text-transform: uppercase;
+}
+
+.status {
+  min-height: 1.5em;
+  margin: 12px 0 0;
+  color: var(--colorMuted);
+  font-family: ui-monospace, Consolas, monospace;
+}
+
+.soundButton {
+  position: absolute;
+  top: 0;
+  right: 0;
+  padding: 8px 12px;
+  border: var(--borderCarved);
+  border-radius: 999px;
+  color: var(--colorParchment);
+  background: rgb(9 7 6 / 78%);
+  cursor: pointer;
+  font-family: system-ui, sans-serif;
+  font-size: 0.76rem;
+}
+
+/*
+Sección: Disposición principal.
+Qué hace: coloca configuración, tablero y Oráculo en tres columnas adaptables.
+Dónde se usa: gameLayout y sus paneles secundarios.
+Fecha de modificación: 10/10/2026.
+Nombre: MCardenas.
+*/
+.gameLayout {
+  display: grid;
+  grid-template-columns: minmax(210px, 0.8fr) minmax(340px, 1.5fr) minmax(220px, 0.85fr);
+  gap: clamp(14px, 2vw, 28px);
+  align-items: center;
+}
+
+.stonePanel,
+.oraclePanel {
+  position: relative;
+  padding: clamp(18px, 2.4vw, 30px);
+  border: 3px solid #7b805f;
+  border-radius: var(--radiusMedium);
+  background:
+    linear-gradient(135deg, rgb(255 255 255 / 8%), transparent 40%),
+    repeating-linear-gradient(20deg, transparent 0 14px, rgb(255 255 255 / 2%) 15px 16px),
+    #202a20;
+  box-shadow: inset 0 0 35px #000, 0 0 0 5px #0c0f0c, var(--shadowDeep);
+}
+
+.stonePanel::before,
+.oraclePanel::before {
+  position: absolute;
+  inset: 7px;
+  border: 1px solid rgb(196 154 85 / 15%);
+  border-radius: 6px;
+  content: '';
+  pointer-events: none;
+}
+
+.stonePanel h2,
+.oraclePanel h2 {
+  margin: 0 0 22px;
+  color: var(--colorGold);
+  font-size: 1.1rem;
+  letter-spacing: 0.18em;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.settingsPanel fieldset + fieldset {
+  margin-top: 22px;
+}
+
+.settingsPanel legend {
+  width: 100%;
+  margin-bottom: 9px;
+  color: var(--colorMuted);
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.optionGrid {
+  display: grid;
+  gap: 8px;
+}
+
+.optionGrid.twoColumns {
+  grid-template-columns: 1fr 1fr;
+}
+
+.optionButton {
+  min-height: 40px;
+  padding: 8px 10px;
+  border: 2px solid var(--colorIron);
+  border-radius: var(--radiusSmall);
+  color: var(--colorParchment);
+  background: linear-gradient(#344236, #121a17);
+  cursor: pointer;
+  font-size: 0.86rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.optionButton:hover:not(:disabled) {
+  border-color: var(--colorGold);
+  color: #fff4dc;
+}
+
+.optionButton.isSelected {
+  border-color: var(--colorGold);
+  color: #fff4dc;
+  background: linear-gradient(#b92a24, #561215);
+  box-shadow: inset 0 0 15px rgb(255 177 27 / 20%), 0 0 12px rgb(255 177 27 / 30%);
+}
+
+fieldset:disabled .optionButton {
+  opacity: 0.55;
+}
+
+/*
+Sección: Tablero ritual.
+Qué hace: dibuja la losa de piedra, las nueve casillas y los símbolos de ambos bandos.
+Dónde se usa: zona central interactiva.
+Fecha de modificación: 10/10/2026.
+Nombre: MCardenas.
+*/
+.ritualArea {
+  display: grid;
+  justify-items: center;
+  gap: 18px;
+}
+
+.boardFrame {
+  width: min(100%, 610px);
+  padding: clamp(13px, 2.5vw, 24px);
+  border: 4px solid #262a22;
+  border-radius: 14px;
+  background:
+    repeating-linear-gradient(135deg, rgb(255 190 31 / 85%) 0 12px, rgb(28 31 25 / 95%) 12px 24px) top / 100% 12px no-repeat,
+    linear-gradient(#818169, #393d31);
+  box-shadow: inset 0 0 45px #000, 0 0 0 6px #080b0a, var(--shadowDeep);
+}
+
+.gameBoard {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: clamp(7px, 1.2vw, 12px);
+  aspect-ratio: 1;
+  perspective: 900px;
+}
+
+.boardCell {
+  position: relative;
+  display: grid;
+  place-items: center;
+  min-width: 0;
+  border: 3px solid #262a28;
+  border-radius: 5px;
+  color: var(--colorParchment);
+  background:
+    linear-gradient(145deg, rgb(255 255 255 / 18%), transparent 35%),
+    radial-gradient(circle at 40% 35%, #d6c78f, #8c7d55 78%);
+  box-shadow: inset 0 0 22px rgb(32 20 10 / 55%), 0 3px 4px #000;
+  cursor: pointer;
+  font-family: system-ui, sans-serif;
+  font-size: clamp(2.8rem, 8vw, 6.8rem);
+  font-weight: 200;
+  overflow: hidden;
+  transform-style: preserve-3d;
+}
+
+.boardCell::after {
+  position: absolute;
+  inset: 3px;
+  border-radius: 3px;
+  background: linear-gradient(145deg, rgb(255 255 255 / 18%), transparent 34% 72%, rgb(0 0 0 / 20%));
+  content: '';
+  pointer-events: none;
+}
+
+.boardCell:not(:disabled):hover {
+  border-color: var(--colorGold);
+  background:
+    radial-gradient(circle, rgb(255 225 73 / 42%), transparent 65%),
+    #b5a66e;
+}
+
+.tokenSprite {
+  width: 88%;
+  height: 88%;
+  object-fit: contain;
+  z-index: 1;
+  filter: drop-shadow(0 10px 5px rgb(0 0 0 / 62%));
+  transform: translateY(-3px) rotateX(7deg);
+}
+
+.boardCell.isWinner {
+  border-color: var(--colorEmber);
+  box-shadow: inset 0 0 25px rgb(227 76 27 / 45%), 0 0 18px rgb(255 155 56 / 55%);
+}
+
+.ritualButton,
+.secondaryButton {
+  min-width: min(100%, 280px);
+  padding: 13px 22px;
+  border: 3px solid #fff08b;
+  border-radius: var(--radiusSmall);
+  color: #fff1d8;
+  background: linear-gradient(#ef4331, #991421);
+  box-shadow: inset 0 1px rgb(255 255 255 / 20%), 0 0 20px rgb(227 76 27 / 18%);
+  cursor: pointer;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+}
+
+.secondaryButton {
+  border-color: var(--colorIron);
+  color: var(--colorMuted);
+  background: #15110e;
+  box-shadow: none;
+}
+
+/*
+Sección: Oráculo y métricas.
+Qué hace: presenta datos reales producidos por la última búsqueda de la IA.
+Dónde se usa: panel derecho.
+Fecha de modificación: 10/10/2026.
+Nombre: MCardenas.
+*/
+.oraclePanel {
+  color: #b8ffc8;
+  background:
+    repeating-linear-gradient(0deg, transparent 0 3px, rgb(255 255 255 / 3%) 4px),
+    radial-gradient(circle, #173827, #07120f 76%);
+  box-shadow: inset 0 0 35px #000, 0 0 0 5px #0c0f0c, var(--shadowDeep);
+  font-family: ui-monospace, Consolas, monospace;
+}
+
+.oraclePanel h2 {
+  color: #7dff9c;
+  border-bottom: 1px solid rgb(125 255 156 / 34%);
+  padding-bottom: 13px;
+}
+
+.metrics {
+  display: grid;
+  gap: 9px;
+  margin: 0;
+}
+
+.metrics div {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.metrics dt {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.metrics dd {
+  margin: 0;
+  font-family: ui-monospace, monospace;
+  font-weight: 700;
+}
+
+.decisionTree {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 5px;
+  width: 130px;
+  margin: 24px auto 14px;
+  text-align: center;
+}
+
+.decisionTree span:first-child,
+.decisionTree i {
+  grid-column: 1 / -1;
+}
+
+.decisionTree i {
+  height: 1px;
+  background: #65d87f;
+}
+
+.oracleText {
+  margin: 0;
+  font-size: 0.86rem;
+  line-height: 1.55;
+  text-align: center;
+}
+
+/*
+Sección: Marcador.
+Qué hace: muestra victorias, empates y la acción para restablecer la sesión.
+Dónde se usa: pie de la aplicación.
+Fecha de modificación: 10/10/2026.
+Nombre: MCardenas.
+*/
+.scoreBoard {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: 18px;
+  align-items: center;
+  max-width: 780px;
+  margin: 30px auto 0;
+  text-align: center;
+}
+
+.scoreOrb,
+.drawScore {
+  display: flex;
+  justify-content: center;
+  gap: 13px;
+  align-items: baseline;
+  min-height: 72px;
+  padding: 15px;
+  border: 1px solid var(--colorIron);
+  border-radius: 50%;
+  background: #111;
+  box-shadow: inset 0 0 28px #000;
+  text-transform: uppercase;
+}
+
+.scoreOrb strong,
+.drawScore strong {
+  font-size: 1.8rem;
+}
+
+.humanOrb {
+  border-color: var(--colorFrostDeep);
+  box-shadow: inset 0 0 28px #061523, 0 0 20px rgb(23 111 168 / 20%);
+}
+
+.aiOrb {
+  border-color: var(--colorDanger);
+  box-shadow: inset 0 0 28px #260805, 0 0 20px rgb(142 29 18 / 24%);
+}
+
+.drawScore {
+  min-width: 150px;
+  border-radius: var(--radiusMedium);
+}
+
+.resetButton {
+  grid-column: 1 / -1;
+  justify-self: center;
+  border: 0;
+  color: var(--colorMuted);
+  background: transparent;
+  cursor: pointer;
+  font-size: 0.78rem;
+  text-decoration: underline;
+}
+
+/*
+Sección: Adaptación responsiva.
+Qué hace: reorganiza paneles y controles para tableta y móvil.
+Dónde se usa: pantallas inferiores a 980 y 600 píxeles.
+Fecha de modificación: 10/10/2026.
+Nombre: MCardenas.
+*/
+@media (max-width: 980px) {
+  .gameLayout {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .ritualArea {
+    grid-column: 1 / -1;
+    grid-row: 1;
+  }
+
+  .settingsPanel,
+  .oraclePanel {
+    align-self: stretch;
+  }
+}
+
+@media (max-width: 600px) {
+  .gameShell {
+    padding: 16px 12px 28px;
+  }
+
+  .soundButton {
+    position: static;
+    margin-top: 12px;
+  }
+
+  .gameLayout {
+    grid-template-columns: 1fr;
+  }
+
+  .ritualArea,
+  .settingsPanel,
+  .oraclePanel {
+    grid-column: 1;
+  }
+
+  .ritualArea {
+    grid-row: 1;
+  }
+
+  .scoreBoard {
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  .drawScore {
+    grid-column: 1 / -1;
+    grid-row: 1;
+    justify-self: center;
+  }
+
+  .scoreOrb {
+    border-radius: var(--radiusMedium);
+  }
+}
+
+/*
+Sección: Pantalla CRT integrada al gabinete.
+Qué hace: limita toda la interfaz al área negra de la imagen de la maquinita.
+Dónde se usa: presentación, configuración y partida después del rediseño arcade.
+Fecha de modificación: 10/10/2026.
+Nombre: MCardenas.
+*/
+#app {
+  min-height: 100vh;
+}
+
+.gameShell {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  max-width: none;
+  height: 100vh;
+  min-height: 620px;
+  padding: 0;
+}
+
+.crtScreen {
+  position: relative;
+  width: min(74vw, 1380px);
+  height: min(78vh, 780px);
+  margin-top: -5vh;
+  overflow: hidden;
+  border: 2px solid rgb(92 255 142 / 24%);
+  border-radius: 26px;
+  color: #a9ffbd;
+  background:
+    repeating-linear-gradient(0deg, rgb(255 255 255 / 1.4%) 0 1px, transparent 1px 4px),
+    radial-gradient(ellipse at center, #092117, #020806 75%);
+  box-shadow: inset 0 0 80px #000, 0 0 24px rgb(63 255 121 / 11%);
+}
+
+.crtScreen::after {
+  position: absolute;
+  z-index: 20;
+  inset: 0;
+  background: linear-gradient(90deg, rgb(255 0 0 / 2%), transparent 33%, rgb(0 255 255 / 2%) 66%, transparent);
+  content: '';
+  pointer-events: none;
+  mix-blend-mode: screen;
+}
+
+/*
+Sección: Presentación de tres segundos.
+Qué hace: centra el título, simula datos de terminal y añade un barrido de fósforo.
+Dónde se usa: introVisible antes de mostrar la interfaz principal.
+Fecha de modificación: 10/10/2026.
+Nombre: MCardenas.
+*/
+.introScreen {
+  display: grid;
+  place-content: center;
+  text-align: center;
+}
+
+.introBoot,
+.introSubtitle,
+.introLoading,
+.matrixCode {
+  font-family: ui-monospace, 'Courier New', monospace;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+.introBoot {
+  color: #5dff89;
+  font-size: clamp(0.65rem, 1vw, 0.9rem);
+}
+
+.introTitle {
+  position: relative;
+  margin: 12px 0;
+  color: #d8ffd8;
+  font-family: Impact, 'Arial Black', sans-serif;
+  font-size: clamp(3rem, 8vw, 8.5rem);
+  letter-spacing: 0.04em;
+  line-height: 0.9;
+  text-shadow: 4px 0 #12a84a, -4px 0 #005f2a, 0 0 28px #38ff72;
+}
+
+.introSubtitle {
+  margin: 10px 0 30px;
+  color: #6aff91;
+  font-size: clamp(0.7rem, 1.4vw, 1rem);
+}
+
+.introLoading {
+  color: #f3ff78;
+  font-size: 0.72rem;
+}
+
+.matrixCode {
+  position: absolute;
+  inset: 7% 5% auto;
+  color: rgb(78 255 126 / 12%);
+  font-size: clamp(0.5rem, 1vw, 0.9rem);
+  line-height: 2.1;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.scanBeam {
+  position: absolute;
+  z-index: 10;
+  top: -12%;
+  left: 0;
+  width: 100%;
+  height: 12%;
+  background: linear-gradient(transparent, rgb(110 255 149 / 34%), #b6ffc7, transparent);
+  box-shadow: 0 16px 40px rgb(45 255 103 / 22%);
+}
+
+/*
+Sección: Cabecera compacta de juego.
+Qué hace: muestra nombre, estado, marcador y audio sin ocupar el área del tablero.
+Dónde se usa: parte superior de gameInterface.
+Fecha de modificación: 10/10/2026.
+Nombre: MCardenas.
+*/
+.gameInterface {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  padding: clamp(10px, 1.5vw, 20px);
+}
+
+.arcadeTopbar {
+  display: grid;
+  grid-template-columns: auto minmax(160px, 1fr) auto auto;
+  gap: 16px;
+  align-items: center;
+  min-height: 54px;
+  margin-bottom: 10px;
+  padding: 8px 12px;
+  border: 1px solid #2fea67;
+  color: #8dffac;
+  background: rgb(0 20 10 / 86%);
+  box-shadow: inset 0 0 18px rgb(45 255 103 / 10%);
+  font-family: ui-monospace, Consolas, monospace;
+}
+
+.miniLogo {
+  color: #d9ff5d;
+  font-size: clamp(0.8rem, 1.5vw, 1.2rem);
+  letter-spacing: 0.08em;
+  text-shadow: 0 0 8px #81ff48;
+}
+
+.arcadeTopbar .status {
+  min-height: 0;
+  margin: 0;
+  overflow: hidden;
+  color: #8dffac;
+  font-size: clamp(0.58rem, 0.9vw, 0.78rem);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.compactScore {
+  display: flex;
+  gap: 14px;
+  color: #7effa0;
+  font-size: clamp(0.55rem, 0.8vw, 0.72rem);
+}
+
+.compactScore strong {
+  color: #ffff72;
+  font-size: 1.15em;
+}
+
+.arcadeTopbar .soundButton {
+  position: static;
+  padding: 5px 8px;
+  border-color: #3ee86e;
+  color: #7effa0;
+  background: #031109;
+}
+
+/*
+Sección: Interfaz interna compacta.
+Qué hace: ajusta menú, tablero y CPU Tactics para permanecer dentro del CRT.
+Dónde se usa: gameLayout dentro de gameInterface.
+Fecha de modificación: 10/10/2026.
+Nombre: MCardenas.
+*/
+.gameInterface .gameLayout {
+  display: grid;
+  grid-template-columns: minmax(150px, 0.72fr) minmax(300px, 1.65fr) minmax(160px, 0.78fr);
+  gap: clamp(8px, 1vw, 14px);
+  min-height: 0;
+  align-items: stretch;
+}
+
+.gameInterface .stonePanel,
+.gameInterface .oraclePanel {
+  min-height: 0;
+  padding: clamp(10px, 1.2vw, 16px);
+  border: 1px solid #3ee86e;
+  border-radius: 2px;
+  color: #99ffae;
+  background:
+    repeating-linear-gradient(0deg, transparent 0 3px, rgb(84 255 120 / 3%) 4px),
+    linear-gradient(135deg, rgb(32 103 57 / 22%), transparent),
+    #020e08;
+  box-shadow: inset 0 0 26px #000, 0 0 12px rgb(62 232 110 / 10%);
+  font-family: ui-monospace, Consolas, monospace;
+  overflow: auto;
+}
+
+.gameInterface .stonePanel h2,
+.gameInterface .oraclePanel h2 {
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #1e8e45;
+  color: #b2ff66;
+  font-size: clamp(0.72rem, 1vw, 0.95rem);
+  letter-spacing: 0.12em;
+}
+
+.gameInterface .settingsPanel fieldset + fieldset {
+  margin-top: clamp(8px, 1.2vh, 13px);
+}
+
+.gameInterface .settingsPanel legend {
+  margin-bottom: 5px;
+  color: #69d982;
+  font-size: clamp(0.55rem, 0.72vw, 0.66rem);
+}
+
+.gameInterface .optionGrid {
+  gap: 5px;
+}
+
+.gameInterface .optionButton {
+  min-height: 30px;
+  padding: 5px;
+  border: 1px solid #286b3a;
+  border-radius: 0;
+  color: #8fffaa;
+  background: #06140b;
+  font-family: ui-monospace, Consolas, monospace;
+  font-size: clamp(0.53rem, 0.72vw, 0.68rem);
+}
+
+.gameInterface .optionButton.isSelected {
+  border-color: #b6ff58;
+  color: #efff87;
+  background: #0c4a24;
+  box-shadow: inset 0 0 12px rgb(104 255 134 / 22%), 0 0 8px rgb(104 255 134 / 20%);
+}
+
+.gameInterface .ritualArea {
+  display: grid;
+  grid-template-rows: minmax(0, 1fr) auto;
+  gap: 8px;
+  min-height: 0;
+}
+
+.gameInterface .boardFrame {
+  width: auto;
+  height: 100%;
+  max-height: none;
+  aspect-ratio: 1;
+  justify-self: center;
+  padding: 4px;
+  border: 3px solid #42c969;
+  border-radius: 2px;
+  image-rendering: pixelated;
+  background: url('../assets/space-grid-board.png') center / cover no-repeat;
+  box-shadow: inset 0 0 8px #000, 0 0 12px rgb(85 255 122 / 13%);
+}
+
+.gameInterface .gameBoard {
+  height: 100%;
+  gap: 0;
+}
+
+.gameInterface .boardCell {
+  border: 1px solid rgb(223 255 228 / 18%);
+  border-radius: 0;
+  background: transparent;
+  box-shadow: inset 0 0 8px rgb(2 24 19 / 18%);
+}
+
+.gameInterface .boardCell::after {
+  background: linear-gradient(145deg, rgb(255 255 255 / 6%), transparent 35% 75%, rgb(0 0 0 / 12%));
+}
+
+.gameInterface .boardCell:not(:disabled):hover {
+  border-color: #e8ff59;
+  background: rgb(213 255 76 / 16%);
+}
+
+.gameInterface .boardCell.isLoser {
+  z-index: 12;
+  overflow: visible;
+}
+
+.gameInterface .tokenSprite {
+  width: 72%;
+  height: 72%;
+  image-rendering: pixelated;
+}
+
+.gameInterface .ritualButton,
+.gameInterface .secondaryButton {
+  min-width: 0;
+  width: min(100%, 220px);
+  padding: 8px 14px;
+  border: 1px solid #bfff58;
+  border-radius: 0;
+  color: #eaff73;
+  background: #0a3b1d;
+  box-shadow: 0 0 12px rgb(72 255 111 / 18%);
+  font-family: ui-monospace, Consolas, monospace;
+  font-size: 0.72rem;
+}
+
+.gameInterface .metrics {
+  gap: 6px;
+}
+
+.gameInterface .metrics dt,
+.gameInterface .metrics dd,
+.gameInterface .oracleText {
+  font-size: clamp(0.52rem, 0.7vw, 0.66rem);
+}
+
+.gameInterface .decisionTree {
+  margin: 14px auto 9px;
+}
+
+.gameInterface > .resetButton {
+  justify-self: center;
+  margin-top: 6px;
+  color: #4fc86a;
+  font-family: ui-monospace, Consolas, monospace;
+  font-size: 0.58rem;
+}
+
+@media (max-aspect-ratio: 16 / 9) {
+  .crtScreen {
+    width: min(92vw, 1180px);
+    height: min(72vh, 760px);
+  }
+}
+
+@media (max-width: 760px) {
+  .gameShell {
+    height: auto;
+    min-height: 100vh;
+    padding: 7vh 4vw 18vh;
+  }
+
+  .crtScreen {
+    width: 100%;
+    height: auto;
+    min-height: 68vh;
+    margin: 0;
+    overflow: visible;
+  }
+
+  .gameInterface .gameLayout {
+    grid-template-columns: 1fr;
+  }
+
+  .gameInterface .ritualArea {
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  .gameInterface .settingsPanel,
+  .gameInterface .oraclePanel {
+    grid-column: 1;
+  }
+
+  .arcadeTopbar {
+    grid-template-columns: 1fr auto;
+  }
+
+  .arcadeTopbar .status,
+  .compactScore {
+    grid-column: 1 / -1;
+  }
+}
+
+/*
+Sección: Modo recreativa espacial a pantalla completa.
+Qué hace: elimina el gabinete exterior y extiende la pantalla verde a todo el navegador.
+Dónde se usa: composición definitiva inspirada en shooters espaciales de los años ochenta.
+Fecha de modificación: 10/10/2026.
+Nombre: MCardenas.
+*/
+.gameShell {
+  height: 100vh;
+  min-height: 620px;
+  background:
+    linear-gradient(rgb(0 12 5 / 48%), rgb(0 3 2 / 72%)),
+    repeating-linear-gradient(90deg, transparent 0 39px, rgb(61 255 107 / 2%) 40px),
+    transparent;
+}
+
+.crtScreen {
+  width: 100vw;
+  max-width: none;
+  height: 100vh;
+  max-height: none;
+  margin: 0;
+  border: 0;
+  border-radius: 0;
+  box-shadow: inset 0 0 100px #000;
+}
+
+.gameInterface {
+  padding: clamp(10px, 1.6vw, 24px);
+}
+
+.gameInterface .gameLayout {
+  max-width: 1500px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.gameInterface .boardFrame {
+  max-height: calc(100vh - 132px);
+}
+
+/*
+Sección: Criaturas decorativas de menú.
+Qué hace: añade fantasmas alienígenas originales en espacios libres sin invadir el tablero.
+Dónde se usa: panel de configuración y panel CPU Tactics.
+Fecha de modificación: 10/10/2026.
+Nombre: MCardenas.
+*/
+.menuSprites {
+  position: absolute;
+  right: 13px;
+  bottom: 12px;
+  left: 13px;
+  display: flex;
+  justify-content: space-around;
+  height: 42px;
+  overflow: hidden;
+  pointer-events: none;
+  opacity: 0.72;
+}
+
+.pixelGhost {
+  position: relative;
+  display: block;
+  width: 22px;
+  height: 18px;
+  margin-top: 7px;
+  background: currentColor;
+  clip-path: polygon(18% 0, 82% 0, 100% 28%, 100% 100%, 76% 78%, 52% 100%, 28% 78%, 0 100%, 0 28%);
+  filter: drop-shadow(0 0 4px currentColor);
+}
+
+.pixelGhost::before {
+  position: absolute;
+  top: 6px;
+  left: 5px;
+  width: 4px;
+  height: 4px;
+  background: #001408;
+  box-shadow: 8px 0 #001408;
+  content: '';
+}
+
+.cyanGhost { color: #35efff; }
+.yellowGhost { color: #fff64e; }
+.pinkGhost { color: #ff36d4; }
+
+.oracleSprites {
+  justify-content: space-between;
+}
+
+.settingsPanel,
+.oraclePanel {
+  position: relative;
+}
+
+@media (max-height: 700px) {
+  .menuSprites {
+    display: none;
+  }
+}
+
+/*
+Sección: Adaptación final para celulares.
+Qué hace: transforma la interfaz horizontal en una experiencia vertical, táctil y desplazable.
+Dónde se usa: teléfonos y ventanas con anchura máxima de 760 píxeles.
+Fecha de modificación: 10/10/2026.
+Nombre: MCardenas.
+*/
+@media (max-width: 760px) {
+  body {
+    overflow-x: hidden;
+  }
+
+  .gameShell {
+    display: block;
+    width: 100%;
+    height: auto;
+    min-height: 100vh;
+    padding: 0;
+  }
+
+  .crtScreen {
+    width: 100%;
+    height: auto;
+    min-height: 100vh;
+    margin: 0;
+    overflow: visible;
+  }
+
+  .introScreen {
+    display: grid;
+    height: 100vh;
+    overflow: hidden;
+  }
+
+  .gameInterface {
+    display: block;
+    padding: 10px;
+  }
+
+  .arcadeTopbar {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 8px;
+    padding: 10px;
+  }
+
+  .miniLogo {
+    font-size: 1rem;
+  }
+
+  .arcadeTopbar .status {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    white-space: normal;
+  }
+
+  .compactScore {
+    grid-column: 1 / -1;
+    grid-row: 3;
+    justify-content: space-between;
+    gap: 6px;
+    font-size: 0.68rem;
+  }
+
+  .arcadeTopbar .soundButton {
+    min-width: 48px;
+    min-height: 44px;
+  }
+
+  .gameInterface .gameLayout {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    gap: 12px;
+  }
+
+  .gameInterface .ritualArea {
+    order: 1;
+    display: grid;
+  }
+
+  .gameInterface .settingsPanel {
+    order: 2;
+  }
+
+  .gameInterface .oraclePanel {
+    order: 3;
+  }
+
+  .gameInterface .boardFrame {
+    width: min(100%, 560px);
+    height: auto;
+    max-height: none;
+    aspect-ratio: 1;
+  }
+
+  .gameInterface .optionButton,
+  .gameInterface .ritualButton,
+  .gameInterface .secondaryButton,
+  .gameInterface > .resetButton {
+    min-height: 44px;
+  }
+
+  .gameInterface .stonePanel,
+  .gameInterface .oraclePanel {
+    min-height: 300px;
+    overflow: hidden;
+  }
+
+  .gameInterface .settingsPanel legend,
+  .gameInterface .optionButton,
+  .gameInterface .metrics dt,
+  .gameInterface .metrics dd,
+  .gameInterface .oracleText {
+    font-size: 0.72rem;
+  }
+
+  .menuSprites {
+    display: flex;
+  }
+
+  .gameInterface > .resetButton {
+    display: block;
+    margin: 12px auto 0;
+    padding: 8px 18px;
+  }
+}
