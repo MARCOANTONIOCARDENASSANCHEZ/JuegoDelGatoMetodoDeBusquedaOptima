@@ -45,4 +45,3 @@ Cada envío a la rama `main` ejecuta automáticamente validación, pruebas, comp
 - IA con Minimax (búsqueda óptima).
 - Pruebas de la lógica y de las decisiones de la IA.
 - Video donde se vea el juego funcionando y se explique el código.
-
